@@ -1,19 +1,27 @@
 package src
 
+import "time"
+
+type Category struct {
+	Id        *uint   `json:"id"`
+	Name      *string `json:"name"`
+	TimesSeen *uint   `json:"times_seen"`
+}
+
 type Installments struct {
-	Quantity         uint8  `json:"quantity"`
-	Fraction         string `json:"fraction"`
-	DecimalSeparator string `json:"decimal_separator"`
-	Cents            string `json:"cents"`
-	Currency         string `json:"currency"`
+	Quantity         *uint   `json:"quantity"`
+	Fraction         *string `json:"fraction"`
+	DecimalSeparator *string `json:"decimal_separator"`
+	Cents            *string `json:"cents"`
+	Currency         *string `json:"currency"`
 }
 
 type Price struct {
-	Currency         string `json:"currency"`
-	Symbol           string `json:"symbol"`
-	DecimalSeparator string `json:"decimal_separator"`
-	Fraction         string `json:"fraction"`
-	Cents            string `json:"cents"`
+	Currency         *string `json:"currency"`
+	Symbol           *string `json:"symbol"`
+	DecimalSeparator *string `json:"decimal_separator"`
+	Fraction         *string `json:"fraction"`
+	Cents            *string `json:"cents"`
 }
 
 type Discount struct {
@@ -27,8 +35,8 @@ type Attribute struct {
 }
 
 type ProductVariation struct {
-	Id                    *uint8       `json:"id"`
-	AvailableQuatity      *uint8       `json:"available_quatity"`
+	Id                    *uint        `json:"id"`
+	AvailableQuatity      *uint        `json:"available_quatity"`
 	AttributesCombination []*Attribute `json:"attributes_combination"`
 }
 
@@ -38,13 +46,23 @@ type Shipping struct {
 }
 
 type Product struct {
+	Id                *uint               `json:"id"`
 	Name              *string             `json:"name"`
 	Description       *string             `json:"description"`
 	ImageLink         *string             `json:"image_link"`
-	CategoryId        *string             `json:"category_id"`
-	AvailableQuantity *uint               `json:"available_quantity"`
+	CategoryId        *uint               `json:"category_id"`
+	AvailableQuantity *uint               `json:"available_quantity"` //Sum of available quantity of each variation
 	Variations        []*ProductVariation `json:"variations"`
 	Shipping          *Shipping           `json:"shipping"`
 	Price             *Price              `json:"price"`
 	Installments      *Installments       `json:"installments"`
+	TimesSeen         *uint               `json:"times_seen"` //Global count of time it has been seeing
+	LastSeen          time.Time           `json:"last_seen"`  //Last time the current user have seen it
+}
+
+type Service interface {
+	GetLastSeenProducts() []*Product
+	GetTrendingProducts() []*Product
+	GetPopularCategories() []*Category
+	GetFilterCategories() []*Category
 }

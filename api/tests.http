@@ -1,0 +1,15 @@
+GET http://localhost:3001/api/v1/categories/popular
+Accept: application/json
+
+###
+GET http://localhost:3001/api/v1/categories/filter
+Accept: application/json
+
+###
+GET http://localhost:3001/api/v1/products/trend
+Accept: application/json
+
+###
+GET http://localhost:3001/api/v1/products/last_seen
+Accept: application/json
+
