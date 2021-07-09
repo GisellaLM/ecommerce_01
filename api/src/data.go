@@ -2,10 +2,13 @@ package src
 
 import (
 	"sort"
+	"strconv"
 	"sync"
 	"time"
 )
 
+//TODO use the database/sql package to create the tables, insert the data and retrieve the results. double iterate for nested objects
+//TODO does a query builder solves this nested structs problem?
 type ServiceImp struct {
 	//mu protects products and categories
 	mu sync.Mutex
@@ -31,7 +34,9 @@ func (r *ServiceImp) Init() {
 }
 
 func (r *ServiceImp) createProduct(p uint, c uint, lastSeen time.Time) *Product {
-	name, desc, image := "p: "+string(p), "desc: "+string(p), "image: "+string(p)
+	strp := strconv.FormatUint(uint64(p), 10)
+
+	name, desc, image := "p: "+strp, "desc: "+strp, "image: "+strp
 	quantity, timesSeen := p*2, p*10
 
 	return &Product{
@@ -51,7 +56,8 @@ func (r *ServiceImp) createProduct(p uint, c uint, lastSeen time.Time) *Product 
 }
 
 func (r *ServiceImp) createCategory(c uint) *Category {
-	n := "cate: " + string(c)
+	strc := strconv.FormatUint(uint64(c), 10)
+	n := "cate: " + strc
 	t := c * 2
 	return &Category{Id: &c, Name: &n, TimesSeen: &t}
 }
