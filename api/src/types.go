@@ -52,6 +52,7 @@ type Product struct {
 	ImageLink         *string             `json:"image_link"`
 	CategoryId        *uint               `json:"category_id"`
 	AvailableQuantity *uint               `json:"available_quantity"` //Sum of available quantity of each variation
+	Stars             [5]*uint            `json:"stars"`
 	Variations        []*ProductVariation `json:"variations"`
 	Shipping          *Shipping           `json:"shipping"`
 	Price             *Price              `json:"price"`
