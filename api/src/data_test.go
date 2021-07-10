@@ -7,9 +7,9 @@ import (
 )
 
 //Checking interface implementation
-var _ src.Service = &src.ServiceImp{}
+var _ src.Service = &src.InMemoryService{}
 
-func TestServiceImp_GetLastSeenProducts(t *testing.T) {
+func TestInMemoryService_GetLastSeenProducts(t *testing.T) {
 	//Arrange
 	yesterday := time.Now().Add(-time.Hour * 24)
 	today := time.Now()
@@ -58,7 +58,7 @@ func TestServiceImp_GetLastSeenProducts(t *testing.T) {
 		tw2,
 	}
 
-	s := &src.ServiceImp{
+	s := &src.InMemoryService{
 		Products: products,
 	}
 
@@ -86,7 +86,7 @@ func TestServiceImp_GetLastSeenProducts(t *testing.T) {
 	}
 }
 
-func TestServiceImp_GetTrendingProducts(t *testing.T) {
+func TestInMemoryService_GetTrendingProducts(t *testing.T) {
 	//Arrange
 	var products []*src.Product
 
@@ -101,7 +101,7 @@ func TestServiceImp_GetTrendingProducts(t *testing.T) {
 		expected = append(expected, products[i])
 	}
 
-	s := &src.ServiceImp{Products: products}
+	s := &src.InMemoryService{Products: products}
 
 	//Act
 	res := s.GetTrendingProducts()
@@ -119,10 +119,10 @@ func TestServiceImp_GetTrendingProducts(t *testing.T) {
 	}
 }
 
-func TestServiceImp_GetFilterCategories(t *testing.T) {
+func TestInMemoryService_GetFilterCategories(t *testing.T) {
 
 }
 
-func TestServiceImp_GetPopularCategories(t *testing.T) {
+func TestInMemoryService_GetPopularCategories(t *testing.T) {
 
 }
