@@ -3,7 +3,10 @@ package main
 import "ecommerce/api/src"
 
 func main() {
-	s := &src.Server{}
+	sr := &src.InMemoryService{}
+	sr.Init()
+
+	s := src.NewServer(sr)
 
 	s.Init()
 }
