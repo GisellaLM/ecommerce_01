@@ -1,7 +1,7 @@
-package src
+package main
 
 import (
-	"ecommerce/api/src/core"
+	core2 "ecommerce/api/core"
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
@@ -10,10 +10,10 @@ import (
 )
 
 type Server struct {
-	s core.Service
+	s core2.Service
 }
 
-func NewServer(s core.Service) *Server {
+func NewServer(s core2.Service) *Server {
 	return &Server{
 		s: s,
 	}

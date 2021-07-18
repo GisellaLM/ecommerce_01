@@ -1,8 +1,7 @@
 package main
 
 import (
-	"ecommerce/api/src"
-	"ecommerce/api/src/meli"
+	"ecommerce/api/meli"
 	"fmt"
 	"github.com/joho/godotenv"
 	"os"
@@ -17,7 +16,7 @@ func main() {
 
 	sr := meli.NewService(os.Getenv("MELI_APP_ID"), os.Getenv("MELI_SECRET"))
 
-	s := src.NewServer(sr)
+	s := NewServer(sr)
 
 	s.Init()
 }

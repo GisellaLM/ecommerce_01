@@ -1,7 +1,7 @@
 package postgres
 
 import (
-	"ecommerce/api/src/core"
+	core2 "ecommerce/api/core"
 	"github.com/jmoiron/sqlx"
 	"github.com/jmoiron/sqlx/reflectx"
 	"strings"
@@ -20,8 +20,8 @@ func NewService(db *sqlx.DB) *PostgresService {
 	}
 }
 
-func (p *PostgresService) GetLastSeenProducts() []*core.Product {
-	var ps []*core.Product
+func (p *PostgresService) GetLastSeenProducts() []*core2.Product {
+	var ps []*core2.Product
 
 	//check nested properties
 	//probably I should iterate and set each one my self
@@ -46,14 +46,14 @@ func (p *PostgresService) GetLastSeenProducts() []*core.Product {
 	return ps
 }
 
-func (p *PostgresService) GetTrendingProducts() []*core.Product {
+func (p *PostgresService) GetTrendingProducts() []*core2.Product {
 	panic("implement me")
 }
 
-func (p *PostgresService) GetPopularCategories() []*core.Category {
+func (p *PostgresService) GetPopularCategories() []*core2.Category {
 	panic("implement me")
 }
 
-func (p *PostgresService) GetFilterCategories() []*core.Category {
+func (p *PostgresService) GetFilterCategories() []*core2.Category {
 	panic("implement me")
 }
