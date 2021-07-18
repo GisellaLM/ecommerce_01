@@ -1,24 +1,19 @@
-package src
+package memory
 
 import (
-	"github.com/jmoiron/sqlx"
-	"github.com/jmoiron/sqlx/reflectx"
-	_ "github.com/lib/pq"
+	"ecommerce/api/src/core"
 	"sort"
 	"strconv"
-	"strings"
 	"sync"
 	"time"
 )
 
-//TODO use the database/sql package to create the tables, insert the data and retrieve the results. double iterate for nested objects
-//TODO does a query builder solves this nested structs problem?
 type InMemoryService struct {
 	//mu protects products and categories
 	mu sync.Mutex
 
-	Products   []*Product
-	Categories []*Category
+	Products   []*core.Product
+	Categories []*core.Category
 }
 
 func (r *InMemoryService) Init() {
@@ -37,13 +32,13 @@ func (r *InMemoryService) Init() {
 	}
 }
 
-func (r *InMemoryService) createProduct(p uint, c uint, lastSeen time.Time) *Product {
+func (r *InMemoryService) createProduct(p uint, c uint, lastSeen time.Time) *core.Product {
 	strp := strconv.FormatUint(uint64(p), 10)
 
 	name, desc, image := "p: "+strp, "desc: "+strp, "image: "+strp
 	quantity, timesSeen := p*2, p*10
 
-	return &Product{
+	return &core.Product{
 		Id:                &p,
 		Name:              &name,
 		Description:       &desc,
@@ -59,14 +54,14 @@ func (r *InMemoryService) createProduct(p uint, c uint, lastSeen time.Time) *Pro
 	}
 }
 
-func (r *InMemoryService) createCategory(c uint) *Category {
+func (r *InMemoryService) createCategory(c uint) *core.Category {
 	strc := strconv.FormatUint(uint64(c), 10)
 	n := "cate: " + strc
 	t := c * 2
-	return &Category{Id: &c, Name: &n, TimesSeen: &t}
+	return &core.Category{Id: &c, Name: &n, TimesSeen: &t}
 }
 
-func (r *InMemoryService) GetLastSeenProducts() []*Product {
+func (r *InMemoryService) GetLastSeenProducts() []*core.Product {
 	r.mu.Lock()
 	//sort by last seen
 	sort.SliceStable(r.Products, func(i, j int) bool {
@@ -78,7 +73,7 @@ func (r *InMemoryService) GetLastSeenProducts() []*Product {
 	return r.Products[:6]
 }
 
-func (r *InMemoryService) GetTrendingProducts() []*Product {
+func (r *InMemoryService) GetTrendingProducts() []*core.Product {
 	r.mu.Lock()
 	//sort by last seen
 	sort.SliceStable(r.Products, func(i, j int) bool {
@@ -90,7 +85,7 @@ func (r *InMemoryService) GetTrendingProducts() []*Product {
 	return r.Products[:8]
 }
 
-func (r *InMemoryService) GetPopularCategories() []*Category {
+func (r *InMemoryService) GetPopularCategories() []*core.Category {
 	r.mu.Lock()
 	//order categories by times seen
 	sort.SliceStable(r.Categories, func(i, j int) bool {
@@ -102,7 +97,7 @@ func (r *InMemoryService) GetPopularCategories() []*Category {
 	return r.Categories[:6]
 }
 
-func (r *InMemoryService) GetFilterCategories() []*Category {
+func (r *InMemoryService) GetFilterCategories() []*core.Category {
 	r.mu.Lock()
 	//order categories by name
 	sort.SliceStable(r.Categories, func(i, j int) bool {
@@ -112,53 +107,4 @@ func (r *InMemoryService) GetFilterCategories() []*Category {
 
 	//return all
 	return r.Categories
-}
-
-type PostgresService struct {
-	db *sqlx.DB
-}
-
-func NewPostgresService(db *sqlx.DB) *PostgresService {
-	db.Mapper = reflectx.NewMapperFunc("json", strings.ToLower)
-	return &PostgresService{
-		db: db,
-	}
-}
-
-func (p PostgresService) GetLastSeenProducts() []*Product {
-	var ps []*Product
-
-	//check nested properties
-	//probably I should iterate and set each one my self
-	p.db.Select(&ps, `
-		SELECT 
-		id,
-		name,
-		description,
-		image_link,
-		category_id,
-		available_quantity,
-		stars,
-		variations,
-		shipping,
-		price,
-		installments,
-		times_seen, 
-		last_seen,  
-		FROM products
-	`)
-
-	return ps
-}
-
-func (p PostgresService) GetTrendingProducts() []*Product {
-	panic("implement me")
-}
-
-func (p PostgresService) GetPopularCategories() []*Category {
-	panic("implement me")
-}
-
-func (p PostgresService) GetFilterCategories() []*Category {
-	panic("implement me")
 }

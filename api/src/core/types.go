@@ -1,4 +1,4 @@
-package src
+package core
 
 import "time"
 
@@ -66,4 +66,8 @@ type Service interface {
 	GetTrendingProducts() []*Product
 	GetPopularCategories() []*Category
 	GetFilterCategories() []*Category
+}
+
+type Auth interface {
+	Authenticated()
 }

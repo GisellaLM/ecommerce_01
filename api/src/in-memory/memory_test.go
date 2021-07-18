@@ -1,13 +1,14 @@
-package src_test
+package memory_test
 
 import (
-	"ecommerce/api/src"
+	"ecommerce/api/src/core"
+	memory "ecommerce/api/src/in-memory"
 	"testing"
 	"time"
 )
 
 //Checking interface implementation
-var _ src.Service = &src.InMemoryService{}
+var _ core.Service = &memory.InMemoryService{}
 
 func TestInMemoryService_GetLastSeenProducts(t *testing.T) {
 	//Arrange
@@ -15,39 +16,39 @@ func TestInMemoryService_GetLastSeenProducts(t *testing.T) {
 	today := time.Now()
 	tomorrow := time.Now().Add(time.Hour * 24)
 
-	y1 := &src.Product{
+	y1 := &core.Product{
 		LastSeen: yesterday,
 	}
 
-	y2 := &src.Product{
+	y2 := &core.Product{
 		LastSeen: yesterday,
 	}
 
-	y3 := &src.Product{
+	y3 := &core.Product{
 		LastSeen: yesterday,
 	}
 
-	y4 := &src.Product{
+	y4 := &core.Product{
 		LastSeen: yesterday,
 	}
 
-	t1 := &src.Product{
+	t1 := &core.Product{
 		LastSeen: today,
 	}
 
-	t2 := &src.Product{
+	t2 := &core.Product{
 		LastSeen: today,
 	}
 
-	tw1 := &src.Product{
+	tw1 := &core.Product{
 		LastSeen: tomorrow,
 	}
 
-	tw2 := &src.Product{
+	tw2 := &core.Product{
 		LastSeen: tomorrow,
 	}
 
-	products := []*src.Product{
+	products := []*core.Product{
 		y1,
 		y2,
 		y3,
@@ -58,7 +59,7 @@ func TestInMemoryService_GetLastSeenProducts(t *testing.T) {
 		tw2,
 	}
 
-	s := &src.InMemoryService{
+	s := &memory.InMemoryService{
 		Products: products,
 	}
 
@@ -66,7 +67,7 @@ func TestInMemoryService_GetLastSeenProducts(t *testing.T) {
 	res := s.GetLastSeenProducts()
 
 	//Assert
-	expected := []*src.Product{
+	expected := []*core.Product{
 		tw2,
 		tw1,
 		t2,
@@ -88,20 +89,20 @@ func TestInMemoryService_GetLastSeenProducts(t *testing.T) {
 
 func TestInMemoryService_GetTrendingProducts(t *testing.T) {
 	//Arrange
-	var products []*src.Product
+	var products []*core.Product
 
 	for i := 0; i < 20; i++ {
 		ui := uint(i)
-		products = append(products, &src.Product{TimesSeen: &ui})
+		products = append(products, &core.Product{TimesSeen: &ui})
 	}
 
 	expectedItems := 8
-	var expected []*src.Product
+	var expected []*core.Product
 	for i := len(products) - 1; i > len(products)-expectedItems-1; i-- {
 		expected = append(expected, products[i])
 	}
 
-	s := &src.InMemoryService{Products: products}
+	s := &memory.InMemoryService{Products: products}
 
 	//Act
 	res := s.GetTrendingProducts()

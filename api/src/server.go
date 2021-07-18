@@ -1,6 +1,7 @@
 package src
 
 import (
+	"ecommerce/api/src/core"
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
@@ -9,18 +10,16 @@ import (
 )
 
 type Server struct {
-	s Service
+	s core.Service
 }
 
-func NewServer(s Service) *Server {
+func NewServer(s core.Service) *Server {
 	return &Server{
 		s: s,
 	}
 }
 
 func (s *Server) Init() {
-	os.Setenv("PORT", ":3001")
-
 	sr := &http.Server{
 		Addr:    os.Getenv("PORT"),
 		Handler: s.Handle(),
@@ -41,6 +40,10 @@ func (s *Server) Handle() http.Handler {
 	sr.HandleFunc("/products/last_seen", s.HandleProductsLastSeen)
 
 	return r
+}
+
+func (s *Server) HandleAuthenticated(h http.HandlerFunc) {
+
 }
 
 func (s *Server) HandleProductsTrend(w http.ResponseWriter, r *http.Request) {
