@@ -1,6 +1,10 @@
 package core
 
-import "time"
+import (
+	"context"
+	"net/http"
+	"time"
+)
 
 type Category struct {
 	Id        *uint   `json:"id"`
@@ -55,19 +59,21 @@ type Product struct {
 	Stars             [5]*uint            `json:"stars"`
 	Variations        []*ProductVariation `json:"variations"`
 	Shipping          *Shipping           `json:"shipping"`
-	Price             *Price              `json:"price"`
+	Price             *float64            `json:"price"`
 	Installments      *Installments       `json:"installments"`
+	Link              *string             `json:"link"`
 	TimesSeen         *uint               `json:"times_seen"` //Global count of time it has been seeing
 	LastSeen          time.Time           `json:"last_seen"`  //Last time the current user have seen it
 }
 
 type Service interface {
-	GetLastSeenProducts() []*Product
-	GetTrendingProducts() []*Product
-	GetPopularCategories() []*Category
-	GetFilterCategories() []*Category
+	GetLastSeenProducts(ctx context.Context) []*Product
+	GetTrendingProducts(ctx context.Context) []*Product
+	GetPopularCategories(ctx context.Context) []*Category
+	GetFilterCategories(ctx context.Context) []*Category
 }
 
-type Auth interface {
-	Authenticated()
+type IdentityProvider interface {
+	Authenticate(w http.ResponseWriter, r *http.Request)
+	Authorize(w http.ResponseWriter, r *http.Request)
 }

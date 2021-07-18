@@ -14,9 +14,9 @@ func main() {
 		fmt.Println(err)
 	}
 
-	sr := meli.NewService(os.Getenv("MELI_APP_ID"), os.Getenv("MELI_SECRET"))
+	sr := meli.NewService(os.Getenv("MELI_APP_ID"), os.Getenv("MELI_SECRET"), os.Getenv("MELI_REDIRECT"))
 
-	s := NewServer(sr)
+	s := NewServer(sr, sr)
 
 	s.Init()
 }
