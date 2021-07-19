@@ -71,6 +71,7 @@ func (m *Service) Authorize(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//save all and redirect to home
+	fmt.Println(tr)
 }
 
 func (m *Service) GetLastSeenProducts(ctx context.Context) []*core.Product {
