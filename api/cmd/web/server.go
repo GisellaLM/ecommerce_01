@@ -12,15 +12,17 @@ import (
 )
 
 type Server struct {
-	s   core.Service
-	idp core.IdentityProvider
-	r   *mux.Router
+	s     core.Service
+	idp   core.IdentityProvider
+	cache core.Cache
+	r     *mux.Router
 }
 
-func NewServer(s core.Service, idp core.IdentityProvider) *Server {
+func NewServer(s core.Service, idp core.IdentityProvider, cache core.Cache) *Server {
 	return &Server{
-		s:   s,
-		idp: idp,
+		s:     s,
+		idp:   idp,
+		cache: cache,
 	}
 }
 

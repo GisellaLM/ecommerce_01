@@ -2,6 +2,7 @@ package main
 
 import (
 	"ecommerce/api/meli"
+	"ecommerce/api/redis"
 	"fmt"
 	"github.com/joho/godotenv"
 	"os"
@@ -14,9 +15,16 @@ func main() {
 		fmt.Println(err)
 	}
 
-	sr := meli.NewService(os.Getenv("MELI_APP_ID"), os.Getenv("MELI_SECRET"), os.Getenv("MELI_REDIRECT"))
+	ch := redis.NewCache(os.Getenv("CACHE_ADDR"))
 
-	s := NewServer(sr, sr)
+	sr := meli.NewService(meli.Config{
+		AppID:    os.Getenv("MELI_APP_ID"),
+		Secret:   os.Getenv("MELI_SECRET"),
+		Redirect: os.Getenv("MELI_REDIRECT"),
+		Cache:    ch,
+	})
+
+	s := NewServer(sr, sr, ch)
 
 	s.Init()
 }
