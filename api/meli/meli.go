@@ -11,26 +11,30 @@ import (
 )
 
 const (
-	authUri  = "http://auth.mercadolibre.com.ar/authorization?response_type=code&client_id=%v&redirect_uri=%v"
-	tokenUri = "https://api.mercadolibre.com/oauth/token"
+	trendingCacheKey = "meli-trending"
+	authUri          = "http://auth.mercadolibre.com.ar/authorization?response_type=code&client_id=%v&redirect_uri=%v"
+	tokenUri         = "https://api.mercadolibre.com/oauth/token"
 )
 
-type Service struct {
-	appID    string
-	secret   string
-	redirect string
+type Config struct {
+	AppID    string
+	Secret   string
+	Redirect string
+	Cache    core.Cache
 }
 
-func NewService(appId string, secret string, redirect string) *Service {
+type Service struct {
+	Config
+}
+
+func NewService(c Config) *Service {
 	return &Service{
-		appID:    appId,
-		secret:   secret,
-		redirect: redirect,
+		c,
 	}
 }
 
 func (m *Service) Authenticate(w http.ResponseWriter, r *http.Request) {
-	uri := fmt.Sprintf(authUri, m.appID, m.redirect)
+	uri := fmt.Sprintf(authUri, m.AppID, m.Redirect)
 
 	http.Redirect(w, r, uri, http.StatusPermanentRedirect)
 }
@@ -40,10 +44,10 @@ func (m *Service) Authorize(w http.ResponseWriter, r *http.Request) {
 
 	body, err := json.Marshal(TokenRequest{
 		GrantType:    "authorization_code",
-		ClientId:     m.appID,
-		ClientSecret: m.secret,
+		ClientId:     m.AppID,
+		ClientSecret: m.Secret,
 		Code:         code,
-		RedirectUri:  m.redirect,
+		RedirectUri:  m.Redirect,
 	})
 
 	if err != nil {
@@ -80,7 +84,11 @@ func (m *Service) GetLastSeenProducts(ctx context.Context) []*core.Product {
 func (m *Service) GetTrendingProducts(ctx context.Context) []*core.Product {
 	tkn := ctx.Value("token").(string)
 
-	//category: ropa y accesorios
+	if prods := m.Cache.Get(trendingCacheKey); prods != nil {
+		return prods.([]*core.Product)
+	}
+
+	//category: clothes and accessories - ropa y accesorios
 	uri := "https://api.mercadolibre.com/highlights/MLA/category/MLA1430"
 	req, _ := http.NewRequest("GET", uri, nil)
 
@@ -101,7 +109,7 @@ func (m *Service) GetTrendingProducts(ctx context.Context) []*core.Product {
 
 	//type product: https://api.mercadolibre.com/products/
 	var products []*core.Product
-	for i := 0; i < len(rp.Content); i++ {
+	for i := 0; i < 3; i++ { //len(rp.Content)
 		if rp.Content[i].Type == "ITEM" {
 			url := "https://api.mercadolibre.com/items/" + rp.Content[i].Id + "?attributes=id,title,subtitle,thumbnail,available_quantity,price"
 			req, _ := http.NewRequest("GET", url, nil)
@@ -126,6 +134,7 @@ func (m *Service) GetTrendingProducts(ctx context.Context) []*core.Product {
 
 			id := uint(i)
 			q := uint(item.AvailableQuantity)
+
 			products = append(products, &core.Product{
 				Id:                &id,
 				Name:              &item.Title,
@@ -144,6 +153,12 @@ func (m *Service) GetTrendingProducts(ctx context.Context) []*core.Product {
 			})
 		}
 	}
+
+	//cache
+	//add auth user token or something like that to the cache
+	//maybe we should query meli to get some of the user data like its id o name
+	//something we can use as a unique key.
+	m.Cache.Set(trendingCacheKey, products)
 
 	return products
 }

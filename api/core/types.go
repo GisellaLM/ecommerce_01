@@ -77,3 +77,8 @@ type IdentityProvider interface {
 	Authenticate(w http.ResponseWriter, r *http.Request)
 	Authorize(w http.ResponseWriter, r *http.Request)
 }
+
+type Cache interface {
+	Set(key string, value interface{})
+	Get(key string) (value interface{})
+}
